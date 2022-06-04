@@ -1,4 +1,5 @@
 use crate::stock::ta::sma;
+
 /// Calculate the exponential moving average (EMA) of a `Vec<f32>` of price data.
 /// 
 /// ### Definition

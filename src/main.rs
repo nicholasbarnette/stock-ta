@@ -19,15 +19,19 @@ fn main() {
 
     const NUM_DAYS: usize = 50;
     let smas = stock::ta::sma::run(prices, NUM_DAYS);
-    println!("smas {:?}", smas);
+    println!("smas {:?}\n\n", smas);
 
     let prices: Vec<f32> = data.iter().map(|el| el.get_close()).collect();
     let emas = stock::ta::ema::run(prices, NUM_DAYS);
-    println!("emas {:?}", emas);
+    println!("emas {:?}\n\n", emas);
 
     let prices: Vec<f32> = data.iter().map(|el| el.get_close()).collect();
     let macds = stock::ta::macd::run(prices);
-    println!("macds {:?}", macds);
+    println!("macds {:?}\n\n", macds);
+
+    let prices: Vec<f32> = data.iter().map(|el| el.get_close()).collect();
+    let rsis = stock::ta::rsi::run(prices);
+    println!("rsis {:?}\n\n", rsis);
 
 
     // let s = json::sanitize::sanitize("{
