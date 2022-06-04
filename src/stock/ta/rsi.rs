@@ -98,11 +98,8 @@ pub fn run(prices: Vec<f32>) -> Vec<f32> {
     let rsi_1 = 100.0 - (100.0 / (1.0 + rs));
     rsis.push(rsi_1);
 
-    println!("{} {}", PERIOD, prices.len());
-
     // Find remaining RSIs
     for i in PERIOD+1..prices.len() {
-        println!("{} {} {}", i, ag, al);
         let current_price = match prices.get(i) {
             Some(&v) => v,
             None => 0.0,
