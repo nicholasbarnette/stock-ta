@@ -42,11 +42,14 @@ use crate::stock::ta::ema;
 /// #### Resources
 /// - https://www.investopedia.com/terms/m/macd.asp
 pub fn run(prices: Vec<f32>) -> (Vec<f32>, Vec<f32>) {
+    const LOW_PERIOD: usize = 12;
+    const HIGH_PERIOD: usize = 26;
+    
     let mut macd: Vec<f32> = Vec::new();
     // EMA calculation requires days+1 entries
-    for i in 27..prices.len() {
-        let emas12 = ema::run(prices[0..i].to_vec(), 12);
-        let emas26 = ema::run(prices[0..i].to_vec(), 26);
+    for i in HIGH_PERIOD+1..prices.len() {
+        let emas12 = ema::run(prices[i-1-HIGH_PERIOD..i].to_vec(), LOW_PERIOD);
+        let emas26 = ema::run(prices[i-1-HIGH_PERIOD..i].to_vec(), HIGH_PERIOD);
         macd.push(emas12[emas12.len()-1] - emas26[emas26.len()-1]);
     }
     let signal = ema::run(macd.to_vec(), 9);

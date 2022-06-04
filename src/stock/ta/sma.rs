@@ -30,11 +30,8 @@
 pub fn run(prices: Vec<f32>, periods: usize) -> Vec<f32> {
     if prices.len() < periods { panic!("Not enough entries to calculate the SMA. Received {}, but required {}.", prices.len(), periods); }
     let mut smas: Vec<f32> = Vec::new();
-    for i in periods..prices.len() {
-        let mut sum = 0.0;
-        for j in 0..periods {
-            sum += prices[i - j];
-        }
+    for i in periods-1..prices.len() {
+        let sum = prices[i+1-periods..i].iter().sum::<f32>();
         smas.push(sum / periods as f32);
     }
     return smas;

@@ -42,7 +42,7 @@
 /// - https://www.investopedia.com/terms/s/stochasticoscillator.asp
 pub fn run(prices: Vec<(f32, f32, f32)>) -> Vec<f32> {
     const PERIOD: usize = 14;
-    if prices.len() < PERIOD { panic!("Not enough entries to calculate OBV. Received {}, but required {}.", prices.len(), PERIOD); }
+    if prices.len() < PERIOD { panic!("Not enough entries to calculate stochastic oscillator. Received {}, but required {}.", prices.len(), PERIOD); }
     let mut oscs: Vec<f32> = Vec::new();
 
     for i in PERIOD-1..prices.len() {

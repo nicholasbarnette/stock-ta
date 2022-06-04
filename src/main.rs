@@ -15,8 +15,8 @@ fn main() {
         &stock::datetime::DateTime::new("1/1/2021 00:00:00"),
         &stock::datetime::DateTime::new("12/31/2021 00:00:00")
     );
-    let prices: Vec<f32> = data.iter().map(|el| el.get_close()).collect();
 
+    let prices: Vec<f32> = data.iter().map(|el| el.get_close()).collect();
     const NUM_DAYS: usize = 50;
     let smas = stock::ta::sma::run(prices, NUM_DAYS);
     println!("smas {:?}\n\n", smas);
@@ -33,15 +33,18 @@ fn main() {
     let rsis = stock::ta::rsi::run(prices);
     println!("rsis {:?}\n\n", rsis);
 
-    
     let prices: Vec<f32> = data.iter().map(|el| el.get_close()).collect();
     let volume: Vec<u32> = data.iter().map(|el| el.get_volume()).collect();
     let obvs = stock::ta::obv::run(prices, volume);
     println!("obvs {:?}\n\n", obvs);
 
     let prices: Vec<(f32, f32, f32)> = data.iter().map(|el| (el.get_close(), el.get_low(), el.get_high())).collect();
-    let obvs = stock::ta::stochastic_oscillator::run(prices);
-    println!("stochastic_oscillator {:?}\n\n", obvs);
+    let stoch_osc = stock::ta::stochastic_oscillator::run(prices);
+    println!("stochastic_oscillator {:?}\n\n", stoch_osc);
+
+    let prices: Vec<f32> = data.iter().map(|el| el.get_close()).collect();
+    let boll_bands = stock::ta::bollinger_band::run(prices);
+    println!("bollinger_band {:?}\n\n", boll_bands);
 
 
     // let s = json::sanitize::sanitize("{

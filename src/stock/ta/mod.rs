@@ -1,3 +1,4 @@
+pub mod bollinger_band;
 pub mod ema;
 pub mod macd;
 pub mod obv;
