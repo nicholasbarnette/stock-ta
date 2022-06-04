@@ -1,4 +1,4 @@
-/// Calculate the simple moving average (SMA) based of a `Vec<f32>` of price data.
+/// Calculate the simple moving average (SMA) based on a `Vec<f32>` of price data.
 /// 
 /// ### Definition
 /// Average price of an asset sampled over a given period of time. Used

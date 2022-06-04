@@ -1,4 +1,4 @@
-/// Calculate the on-balance volume (OBV) based of a `Vec<f32>` of price data
+/// Calculate the on-balance volume (OBV) based on a `Vec<f32>` of price data
 /// and a `Vec<u32>` of volume data.
 /// 
 /// ### Definition

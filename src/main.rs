@@ -39,6 +39,10 @@ fn main() {
     let obvs = stock::ta::obv::run(prices, volume);
     println!("obvs {:?}\n\n", obvs);
 
+    let prices: Vec<(f32, f32, f32)> = data.iter().map(|el| (el.get_close(), el.get_low(), el.get_high())).collect();
+    let obvs = stock::ta::stochastic_oscillator::run(prices);
+    println!("stochastic_oscillator {:?}\n\n", obvs);
+
 
     // let s = json::sanitize::sanitize("{
     //     \"test\": \"testing 1\",

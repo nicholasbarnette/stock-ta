@@ -1,4 +1,4 @@
-/// Calculate the relative strength index (RSI) of a `Vec<f32>` of price data.
+/// Calculate the relative strength index (RSI) on a `Vec<f32>` of price data.
 /// 
 /// ### Definition
 /// Measures the magnitude of recent price changes to determine whether
