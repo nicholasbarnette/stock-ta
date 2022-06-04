@@ -71,6 +71,7 @@ impl Stock {
         };
 
         // Add HistoricalData to Stock
+        let content = content.replace("\r", "");
         let contents: Vec<&str> = content.split('\n').collect();
         for line in &contents[1..contents.len()] {
             let values: Vec<&str> = line.split(',').collect();

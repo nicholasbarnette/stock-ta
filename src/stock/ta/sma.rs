@@ -35,7 +35,7 @@ pub fn run(prices: Vec<f32>, periods: usize) -> Vec<f32> {
         for j in 0..periods {
             sum += prices[i - j];
         }
-        smas.push(sum / periods as f32)
+        smas.push(sum / periods as f32);
     }
     return smas;
 }

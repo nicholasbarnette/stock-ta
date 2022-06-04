@@ -69,7 +69,7 @@ fn partition(a: &mut Vec<HistoricalData>, low: usize, high: usize) -> usize {
         match a.to_vec().get(j).clone() {
             Some(_v) => {
                 if !compare(a[j].get_date(), pivot.get_date()) {
-                    &a.swap(i, j);
+                    let _ = &a.swap(i, j);
                     i += 1;
                 }
             }

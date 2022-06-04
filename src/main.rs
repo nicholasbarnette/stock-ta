@@ -33,6 +33,12 @@ fn main() {
     let rsis = stock::ta::rsi::run(prices);
     println!("rsis {:?}\n\n", rsis);
 
+    
+    let prices: Vec<f32> = data.iter().map(|el| el.get_close()).collect();
+    let volume: Vec<u32> = data.iter().map(|el| el.get_volume()).collect();
+    let obvs = stock::ta::obv::run(prices, volume);
+    println!("obvs {:?}\n\n", obvs);
+
 
     // let s = json::sanitize::sanitize("{
     //     \"test\": \"testing 1\",
