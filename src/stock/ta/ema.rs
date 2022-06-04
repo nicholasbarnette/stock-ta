@@ -46,7 +46,8 @@ pub fn run(prices: Vec<f32>, periods: usize) -> Vec<f32> {
     if prices.len() < periods+1 { panic!("Not enough entries to calculate the EMA. Received {}, but required {} (periods+1).", prices.len(), periods+1); }
     let smoothing: f32 = 2.0 / (periods as f32 + 1.0);
     let mut emas: Vec<f32> = Vec::new();
-    let mut ema_prev = match sma::run(prices.to_vec(), periods).pop() {
+    // Use the SMA as its first `ema_prev`
+    let mut ema_prev = match sma::run(prices[0..periods].to_vec(), periods).pop() {
         Some(v) => v,
         None => 0.0,
     };
@@ -56,4 +57,34 @@ pub fn run(prices: Vec<f32>, periods: usize) -> Vec<f32> {
         emas.push(ema);
     }
     return emas;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_run_simple() {
+        let prices = vec![10.0, 10.0, 15.0, 20.0, 20.0, 10.0];
+        assert_eq!(run(prices, 5), vec![13.333332]);
+    }
+
+    #[test]
+    fn test_run_complex() {
+        let prices = vec![10.0, 10.0, 15.0, 20.0, 20.0, 10.0, 10.0, 10.0];
+        assert_eq!(run(prices, 5), vec![13.333332, 12.222221, 11.48148]);
+    }
+
+    #[test]
+    fn test_run_random() {
+        let prices = vec![5.0, 10.0, 11.0, 6.0, 5.0, 42.0, 33.0, 1.0];
+        assert_eq!(run(prices, 5), vec![18.933332, 23.622221, 16.08148]);
+    }
+
+    #[test]
+    #[should_panic(expected = "Not enough entries to calculate the EMA. Received 5, but required 6 (periods+1).")]
+    fn test_run_not_enough_elements() {
+        let prices = vec![10.0, 10.0, 15.0, 20.0, 20.0];
+        run(prices, 5);
+    }
 }

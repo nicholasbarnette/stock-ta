@@ -13,8 +13,8 @@
 /// - `al`: average loss over a period
 /// - `pag`: previously calculated average gain
 /// - `pal`: previously calculated average loss
-/// - `cg`: gain from previous period's price (or 0 if a loss)
-/// - `cl`: loss from previous period's price (or 0 if a gain)
+/// - `cg`: current gain (or 0 if a loss)
+/// - `cl`: current loss (or 0 if a gain)
 /// 
 /// NOTE: The first calculation of the RSI is calculated by `rs1` above whereas the
 /// remaining RSIs are calculated using `rsi2`.
@@ -85,9 +85,9 @@ pub fn run(prices: Vec<f32>) -> Vec<f32> {
         };
         if current_price > last_price {
             ag += current_price - last_price;
-            al += 0.0;
+            // al += 0.0;
         } else if current_price < last_price {
-            ag += 0.0;
+            // ag += 0.0;
             al += last_price - current_price;
         }
         last_price = current_price;
@@ -98,18 +98,21 @@ pub fn run(prices: Vec<f32>) -> Vec<f32> {
     let rsi_1 = 100.0 - (100.0 / (1.0 + rs));
     rsis.push(rsi_1);
 
+    println!("{} {}", PERIOD, prices.len());
+
     // Find remaining RSIs
-    for i in PERIOD+2..prices.len() {
+    for i in PERIOD+1..prices.len() {
+        println!("{} {} {}", i, ag, al);
         let current_price = match prices.get(i) {
             Some(&v) => v,
             None => 0.0,
         };
         if current_price > last_price {
-            ag = ((ag * 13.0) + current_price) / 14.0;
-            al = ((al * 13.0) + 0.0) / 14.0;
+            ag = ((ag * (PERIOD as f32-1.0)) + (current_price - last_price)) / PERIOD as f32;
+            al = ((al * (PERIOD as f32-1.0))) / PERIOD as f32;
         } else if current_price < last_price {
-            ag = ((ag * 13.0) + 0.0) / 14.0;
-            al = ((al * 13.0) + current_price) / 14.0;
+            ag = ((ag * (PERIOD as f32-1.0))) / PERIOD as f32;
+            al = ((al * (PERIOD as f32-1.0)) + (last_price - current_price)) / PERIOD as f32;
         }
         let rs = ag / al;
         let rsi = 100.0 - (100.0 / (1.0 + rs));
@@ -117,4 +120,34 @@ pub fn run(prices: Vec<f32>) -> Vec<f32> {
         last_price = current_price;
     }
     return rsis;
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_run_simple() {
+        let prices = vec![10.0, 12.0, 15.0, 13.0, 18.0, 10.0, 12.0, 15.0, 13.0, 18.0, 10.0, 12.0, 15.0, 13.0, 18.0];
+        assert_eq!(run(prices), vec![57.69231]);
+    }
+
+    #[test]
+    fn test_run_complex() {
+        let prices = vec![10.0, 12.0, 15.0, 13.0, 18.0, 10.0, 12.0, 15.0, 13.0, 18.0, 10.0, 12.0, 15.0, 13.0, 18.0, 10.0];
+        assert_eq!(run(prices), vec![57.69231, 49.492382]);
+    }
+
+    #[test]
+    fn test_run_random() {
+        let prices = vec![5.0, 10.0, 11.0, 6.0, 5.0, 42.0, 33.0, 1.0, 5.0, 10.0, 11.0, 6.0, 5.0, 42.0, 33.0, 1.0, 5.0, 10.0, 11.0, 6.0, 5.0, 42.0, 33.0, 1.0];
+        assert_eq!(run(prices), vec![59.210526, 48.267326, 49.52316, 51.120464, 51.451355, 49.641834, 49.268627, 60.9628, 57.491276, 47.199604]);
+    }
+
+    #[test]
+    #[should_panic(expected = "Not enough entries to calculate the RSI. Received 0, but required 15.")]
+    fn test_run_not_enough_elements() {
+        run(vec![]);
+    }
 }

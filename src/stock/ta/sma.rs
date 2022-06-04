@@ -30,9 +30,42 @@
 pub fn run(prices: Vec<f32>, periods: usize) -> Vec<f32> {
     if prices.len() < periods { panic!("Not enough entries to calculate the SMA. Received {}, but required {}.", prices.len(), periods); }
     let mut smas: Vec<f32> = Vec::new();
-    for i in periods-1..prices.len() {
-        let sum = prices[i+1-periods..i].iter().sum::<f32>();
+    let mut i = periods;
+    while {
+        let sum = prices[i-periods..i].iter().sum::<f32>();
         smas.push(sum / periods as f32);
-    }
+        i += 1;
+        i <= prices.len()
+    } {}
     return smas;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_run_simple() {
+        let prices = vec![10.0, 10.0, 15.0, 20.0, 20.0];
+        assert_eq!(run(prices, 5), vec![15.0]);
+    }
+
+    #[test]
+    fn test_run_complex() {
+        let prices = vec![10.0, 10.0, 15.0, 20.0, 20.0, 10.0, 10.0, 10.0];
+        assert_eq!(run(prices, 5), vec![15.0, 15.0, 15.0, 14.0]);
+    }
+
+    #[test]
+    fn test_run_random() {
+        let prices = vec![5.0, 10.0, 11.0, 6.0, 5.0, 42.0, 33.0, 1.0];
+        assert_eq!(run(prices, 5), vec![7.4, 14.8, 19.4, 17.4]);
+    }
+
+    #[test]
+    #[should_panic(expected = "Not enough entries to calculate the SMA. Received 1, but required 5.")]
+    fn test_run_not_enough_elements() {
+        let prices = vec![10.0];
+        run(prices, 5);
+    }
 }
