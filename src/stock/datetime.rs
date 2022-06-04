@@ -61,6 +61,30 @@ impl DateTime {
     pub fn get_minute(&self) -> u8 { return self.minute; }
     pub fn get_second(&self) -> u8 { return self.second; }
 
+    /// Compares two `DateTime`s and returns `true` if both `DateTime`s
+    /// are equivalent.__rust_force_expr!
+    /// 
+    /// ### Examples
+    /// ```
+    /// let d1 = DateTime::new("4/23/2021 16:00:00");
+    /// let d2 = DateTime::new("4/23/2021 16:00:00");
+    /// assert_eq!(d1.is_on(&d2), true);
+    /// assert_eq!(d2.is_on(&d1), true);
+    /// ```
+    pub fn is_on(&self, d: &DateTime) -> bool {
+        if self.year == d.get_year() && self.month == d.get_month() && self.day == d.get_day() && self.hour == d.get_hour() && self.minute == d.get_minute() { return true; }
+        return false;
+    }
+
+    /// Compares two `DateTime`s and returns `true` if the caller comes
+    /// after the callee.
+    /// 
+    /// ```
+    /// let d1 = DateTime::new("4/23/2021 16:00:00");
+    /// let d2 = DateTime::new("4/23/2020 16:00:00");
+    /// assert_eq!(d1.is_after(&d2), true);
+    /// assert_eq!(d2.is_after(&d1), false);
+    /// ```
     pub fn is_after(&self, d: &DateTime) -> bool {
         if self.year > d.get_year() { return true; }
         if self.year == d.get_year() && self.month > d.get_month() { return true; }
@@ -71,6 +95,15 @@ impl DateTime {
         return false;
     }
 
+    /// Compares two `DateTime`s and returns `true` if the caller is on
+    /// or comes after the callee.
+    /// 
+    /// ```
+    /// let d1 = DateTime::new("4/23/2021 16:00:00");
+    /// let d2 = DateTime::new("4/23/2020 16:00:00");
+    /// assert_eq!(d1.is_after(&d2), true);
+    /// assert_eq!(d2.is_after(&d1), false);
+    /// ```
     pub fn is_on_or_after(&self, d: &DateTime) -> bool {
         if self.year >= d.get_year() { return true; }
         if self.year == d.get_year() && self.month >= d.get_month() { return true; }
@@ -80,6 +113,15 @@ impl DateTime {
         return false;
     }
 
+    /// Compares two `DateTime`s and returns `true` if the caller comes
+    /// before the callee.
+    /// 
+    /// ```
+    /// let d1 = DateTime::new("4/23/2020 16:00:00");
+    /// let d2 = DateTime::new("4/23/2021 16:00:00");
+    /// assert_eq!(d1.is_after(&d2), true);
+    /// assert_eq!(d2.is_after(&d1), false);
+    /// ```
     pub fn is_before(&self, d: &DateTime) -> bool {
         if self.year < d.get_year() { return true; }
         if self.year == d.get_year() && self.month < d.get_month() { return true; }
@@ -89,6 +131,15 @@ impl DateTime {
         return false;
     }
 
+    /// Compares two `DateTime`s and returns `true` if the caller is on
+    /// or comes before the callee.
+    /// 
+    /// ```
+    /// let d1 = DateTime::new("4/23/2020 16:00:00");
+    /// let d2 = DateTime::new("4/23/2021 16:00:00");
+    /// assert_eq!(d1.is_after(&d2), true);
+    /// assert_eq!(d2.is_after(&d1), false);
+    /// ```
     pub fn is_on_or_before(&self, d: &DateTime) -> bool {
         if self.year <= d.get_year() { return true; }
         if self.year == d.get_year() && self.month <= d.get_month() { return true; }
@@ -104,7 +155,7 @@ impl DateTime {
 }
 
 /// Compares two `DateTime`s and returns `true` if the first `DateTime` is
-/// older than the second. Returns `false` if `DateTime`s are exquivalent.
+/// before the second. Returns `false` if `DateTime`s are exquivalent.
 /// 
 /// # Examples
 /// ```
@@ -115,11 +166,38 @@ impl DateTime {
 /// compare(DateTime::new("1/1/2020 12:00:00"), DateTime::new("1/1/2020 12:00:00")); // returns `false`
 /// ```
 pub fn compare(dt1: &DateTime, dt2: &DateTime) -> bool {
-    if dt1.get_year() > dt2.get_year() { return true; }
-    if dt1.get_month() > dt2.get_month() { return true; }
-    if dt1.get_day() > dt2.get_day() { return true; }
-    if dt1.get_hour() > dt2.get_hour() { return true; }
-    if dt1.get_minute() > dt2.get_minute() { return true; }
-    if dt1.get_second() > dt2.get_second() { return true; }
-    return false;
+    return dt1.is_before(dt2);
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_new() {
+        let d = DateTime::new("4/23/2021 16:00:00");
+        assert_eq!(d.get_year(), 2021);
+        assert_eq!(d.get_month(), 4);
+        assert_eq!(d.get_day(), 23);
+        assert_eq!(d.get_hour(), 16);
+        assert_eq!(d.get_minute(), 0);
+        assert_eq!(d.get_second(), 0);
+    }
+
+    #[test]
+    fn test_comparisons() {
+        let d1 = DateTime::new("4/23/2021 16:00:00");
+        let d2 = DateTime::new("4/23/2020 16:00:00");
+        assert_eq!(d1.is_after(&d2), true);
+        assert_eq!(d1.is_on_or_after(&d2), true);
+        assert_eq!(d1.is_before(&d2), false);
+        assert_eq!(d1.is_on_or_before(&d2), false);
+
+        let d1 = DateTime::new("4/23/2021 16:00:00");
+        let d2 = DateTime::new("4/23/2021 16:00:00");
+        assert_eq!(d1.is_on_or_after(&d2), true);
+        assert_eq!(d1.is_on_or_before(&d2), true);
+        assert_eq!(d1.is_on(&d2), true);
+    }
 }
