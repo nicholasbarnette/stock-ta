@@ -84,7 +84,6 @@ mod tests {
     #[test]
     #[should_panic(expected = "Not enough entries to calculate the EMA. Received 5, but required 6 (periods+1).")]
     fn test_run_not_enough_elements() {
-        let prices = vec![10.0, 10.0, 15.0, 20.0, 20.0];
-        run(prices, 5);
+        run(vec![10.0, 10.0, 15.0, 20.0, 20.0], 5);
     }
 }

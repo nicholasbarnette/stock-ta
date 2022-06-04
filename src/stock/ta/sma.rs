@@ -57,15 +57,8 @@ mod tests {
     }
 
     #[test]
-    fn test_run_random() {
-        let prices = vec![5.0, 10.0, 11.0, 6.0, 5.0, 42.0, 33.0, 1.0];
-        assert_eq!(run(prices, 5), vec![7.4, 14.8, 19.4, 17.4]);
-    }
-
-    #[test]
     #[should_panic(expected = "Not enough entries to calculate the SMA. Received 1, but required 5.")]
     fn test_run_not_enough_elements() {
-        let prices = vec![10.0];
-        run(prices, 5);
+        run(vec![10.0], 5);
     }
 }

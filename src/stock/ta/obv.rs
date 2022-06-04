@@ -63,3 +63,30 @@ pub fn run(prices: Vec<f32>, volume: Vec<u32>) -> Vec<i32> {
     }
     return obvs;
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_run_simple() {
+        assert_eq!(run(vec![10.0, 15.0], vec![100, 500]), vec![500]);
+    }
+
+    #[test]
+    fn test_run_complex() {
+        assert_eq!(run(vec![10.0, 15.0, 20.0, 15.0, 10.0], vec![100, 500, 300, 1500, 200]), vec![500, 800, -700, -900]);
+    }
+
+    #[test]
+    #[should_panic(expected = "Length mismatch. `prices` contains 2 entries, but `volume` contains 1.")]
+    fn test_run_length_mismatch() {
+        run(vec![10.0, 10.0], vec![10]);
+    }
+
+    #[test]
+    #[should_panic(expected = "Not enough entries to calculate OBV. Received 1, but required 2.")]
+    fn test_run_not_enough_elements() {
+        run(vec![10.0], vec![10]);
+    }
+}

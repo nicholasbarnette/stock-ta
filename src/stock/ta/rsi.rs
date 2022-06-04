@@ -119,7 +119,6 @@ pub fn run(prices: Vec<f32>) -> Vec<f32> {
     return rsis;
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
