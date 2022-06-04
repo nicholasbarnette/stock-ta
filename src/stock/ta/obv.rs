@@ -6,25 +6,31 @@
 /// about volume.
 /// 
 /// ### Formula
-/// volume conditions:
+/// `days_volume` conditions:
 /// - `volume` if close > close_prev
 /// - `0` if close = close_prev
 /// - `-volume` if close < close_prev
 /// 
-/// `obv = obv_prev + volume`
+/// `obv = obv_prev + days_volume`
 /// 
 /// ### Usage
-/// - death cross: 50-day SMA crosses below 200-day SMA
-/// - golden cross: 200-day SMA crosses below 50-day SMA
+/// Volume is often used to track large, institutional investors. OBV can 
+/// help identify when institutions have decided a good point to buy up
+/// retail investor sell offs. OBV is prone to producing false signals. By
+/// leveraging moving averages (lagging signals) OBV may be balanced out to
+/// confirm breakouts (when MA and OBV move in same direction).
+/// 
+/// NOTE: A large volume spike on a single day can throw off the OBV for
+/// a while.
 /// 
 /// # Arguments
 /// * `prices` - `Vec<f32>` containing prices for a period of time
-/// * `periods` - Number of periods to average
+/// * `volume` - `Vec<u32>` containing volume data for a period of time
 /// 
 /// ### Example
 /// ```
-/// obv::run(prices, 50);
-/// obv::run(prices, 200);
+/// obv::run(prices, volume);
+/// obv::run(prices, volume);
 /// ```
 /// 
 /// #### Resources
