@@ -1,4 +1,4 @@
-use crate::stock::datetime::{DateTime, compare};
+use crate::stock::datetime::{DateTime};
 
 #[derive(Debug)]
 #[derive(Clone)]
@@ -55,33 +55,29 @@ impl HistoricalData {
         return output;
     }
 }
+
 pub fn sort_by_date(d: &mut Vec<HistoricalData>) {
     quicksort(d);
 }
 
-fn partition(a: &mut Vec<HistoricalData>, low: usize, high: usize) -> usize {
-    let pivot = match a.get(high) {
+fn partition(a: &mut Vec<HistoricalData>, low: i64, high: i64) -> i64 {
+    let pivot = match a.get(high as usize) {
         Some(el) => el.clone(),
         _ => panic!("Array index {} out of bounds.", high-1)
     };
     let mut i = low - 1;
     for j in low..high {
-        match a.to_vec().get(j).clone() {
-            Some(_v) => {
-                if !compare(a[j].get_date(), pivot.get_date()) {
-                    let _ = &a.swap(i, j);
-                    i += 1;
-                }
-            }
-            _ => {panic!("Array index {:?} for j out of bounds", j)}
+        if a[j as usize].get_date().is_before(&pivot.get_date()) {
+            i += 1;
+            a.swap(i as usize, j as usize);
         }
     }
-    a.swap(i+1, high);
+    a.swap((i+1) as usize, high as usize);
     return i+1;
 }
 
-fn _quicksort(a: &mut Vec<HistoricalData>, low: usize, high: usize) {
-    if low > high {
+fn _quicksort(a: &mut Vec<HistoricalData>, low: i64, high: i64) {
+    if low < high {
         let pi = partition(a, low, high);
         _quicksort(a, low, pi-1);
         _quicksort(a, pi+1, high);
@@ -89,5 +85,88 @@ fn _quicksort(a: &mut Vec<HistoricalData>, low: usize, high: usize) {
 }
 
 fn quicksort(a: &mut Vec<HistoricalData>) {
-    _quicksort(a, 0, a.len()-1);
+    _quicksort(a, 0, (a.len() as i64)-1);
+}
+
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_new() {
+        let d = HistoricalData::new("4/23/2021 16:00:00", 10.0, 17.0, 8.0, 11.0, 10050);
+        assert_eq!(d.get_date().get_year(), 2021);
+        assert_eq!(d.get_date().get_month(), 4);
+        assert_eq!(d.get_date().get_day(), 23);
+        assert_eq!(d.get_date().get_hour(), 16);
+        assert_eq!(d.get_date().get_minute(), 0);
+        assert_eq!(d.get_date().get_second(), 0);
+        assert_eq!(d.get_open(), 10.0);
+        assert_eq!(d.get_high(), 17.0);
+        assert_eq!(d.get_low(), 8.0);
+        assert_eq!(d.get_close(), 11.0);
+        assert_eq!(d.get_volume(), 10050);
+    }
+
+    #[test]
+    fn test_sort_by_date_simple() {
+        let d1 = HistoricalData::new("4/23/2021 16:00:00", 10.0, 17.0, 8.0, 11.0, 10050);
+        let d2 = HistoricalData::new("4/23/2020 16:00:00", 10.0, 17.0, 8.0, 11.0, 10050);
+        let d3 = HistoricalData::new("4/23/2019 16:00:00", 10.0, 17.0, 8.0, 11.0, 10050);
+        let d4 = HistoricalData::new("4/23/2018 16:00:00", 10.0, 17.0, 8.0, 11.0, 10050);
+        let d5 = HistoricalData::new("4/23/2017 16:00:00", 10.0, 17.0, 8.0, 11.0, 10050);
+        let mut dates = vec![d1,d2,d3,d4,d5];
+        sort_by_date(&mut dates);
+        assert_eq!(dates[0].get_date().is_before(&dates[1].get_date()), true);
+        assert_eq!(dates[1].get_date().is_before(&dates[2].get_date()), true);
+        assert_eq!(dates[2].get_date().is_before(&dates[3].get_date()), true);
+        assert_eq!(dates[3].get_date().is_before(&dates[4].get_date()), true);
+    }
+
+    #[test]
+    fn test_sort_by_date_complex() {
+        let d1 = HistoricalData::new("4/23/2021 16:00:00", 10.0, 17.0, 8.0, 11.0, 10050);
+        let d2 = HistoricalData::new("4/23/2019 16:00:00", 10.0, 17.0, 8.0, 11.0, 10050);
+        let d3 = HistoricalData::new("4/23/2018 16:00:00", 10.0, 17.0, 8.0, 11.0, 10050);
+        let d4 = HistoricalData::new("4/23/2017 16:00:00", 10.0, 17.0, 8.0, 11.0, 10050);
+        let d5 = HistoricalData::new("4/23/2020 16:00:00", 10.0, 17.0, 8.0, 11.0, 10050);
+        let mut dates = vec![d1,d2,d3,d4,d5];
+        sort_by_date(&mut dates);
+        assert_eq!(dates[0].get_date().is_before(&dates[1].get_date()), true);
+        assert_eq!(dates[1].get_date().is_before(&dates[2].get_date()), true);
+        assert_eq!(dates[2].get_date().is_before(&dates[3].get_date()), true);
+        assert_eq!(dates[3].get_date().is_before(&dates[4].get_date()), true);
+    }
+
+    #[test]
+    fn test_sort_by_time_simple() {
+        let d1 = HistoricalData::new("4/23/2020 16:30:50", 10.0, 17.0, 8.0, 11.0, 10050);
+        let d2 = HistoricalData::new("4/23/2020 16:30:40", 10.0, 17.0, 8.0, 11.0, 10050);
+        let d3 = HistoricalData::new("4/23/2020 16:30:30", 10.0, 17.0, 8.0, 11.0, 10050);
+        let d4 = HistoricalData::new("4/23/2020 16:30:20", 10.0, 17.0, 8.0, 11.0, 10050);
+        let d5 = HistoricalData::new("4/23/2020 16:30:10", 10.0, 17.0, 8.0, 11.0, 10050);
+        let mut dates = vec![d1,d2,d3,d4,d5];
+        sort_by_date(&mut dates);
+        assert_eq!(dates[0].get_date().is_before(&dates[1].get_date()), true);
+        assert_eq!(dates[1].get_date().is_before(&dates[2].get_date()), true);
+        assert_eq!(dates[2].get_date().is_before(&dates[3].get_date()), true);
+        assert_eq!(dates[3].get_date().is_before(&dates[4].get_date()), true);
+    }
+
+    #[test]
+    fn test_sort_by_time_complex() {
+        let d1 = HistoricalData::new("4/23/2020 16:30:30", 10.0, 17.0, 8.0, 11.0, 10050);
+        let d2 = HistoricalData::new("4/23/2020 16:30:40", 10.0, 17.0, 8.0, 11.0, 10050);
+        let d3 = HistoricalData::new("4/23/2020 16:30:50", 10.0, 17.0, 8.0, 11.0, 10050);
+        let d4 = HistoricalData::new("4/23/2020 16:30:10", 10.0, 17.0, 8.0, 11.0, 10050);
+        let d5 = HistoricalData::new("4/23/2020 16:30:20", 10.0, 17.0, 8.0, 11.0, 10050);
+        let mut dates = vec![d1,d2,d3,d4,d5];
+        sort_by_date(&mut dates);
+        assert_eq!(dates[0].get_date().is_before(&dates[1].get_date()), true);
+        assert_eq!(dates[1].get_date().is_before(&dates[2].get_date()), true);
+        assert_eq!(dates[2].get_date().is_before(&dates[3].get_date()), true);
+        assert_eq!(dates[3].get_date().is_before(&dates[4].get_date()), true);
+    }
 }

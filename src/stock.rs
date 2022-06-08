@@ -10,7 +10,7 @@ pub struct Stock {
     ticker: String,
     security_type: String,
     name: String,
-    market_cap: u32,
+    market_cap: u64,
     pe_ratio: f32,
     eps: f32,
     high52: f32,
@@ -43,8 +43,8 @@ impl Stock {
     pub fn get_name(&self) -> String {return self.name.to_string();}
     pub fn set_name(&mut self, name: &str) {self.name = name.to_string();}
 
-    pub fn get_market_cap(&self) -> u32 {return self.market_cap;}
-    pub fn set_market_cap(&mut self, market_cap: u32) {self.market_cap = market_cap;}
+    pub fn get_market_cap(&self) -> u64 {return self.market_cap;}
+    pub fn set_market_cap(&mut self, market_cap: u64) {self.market_cap = market_cap;}
 
     pub fn get_pe_ratio(&self) -> f32 {return self.pe_ratio;}
     pub fn set_pe_ratio(&mut self, pe_ratio: f32) {self.pe_ratio = pe_ratio;}
@@ -136,22 +136,23 @@ impl Stock {
             Ok(market_cap) => market_cap,
             Err(_) => 0,
         });
-        self.set_pe_ratio(match values[2].to_string().parse() {
-            Ok(pe_ratio) => pe_ratio,
-            Err(_) => 0.0,
-        });
-        self.set_eps(match values[3].to_string().parse() {
-            Ok(eps) => eps,
-            Err(_) => 0.0,
-        });
-        self.set_high52(match values[4].to_string().parse() {
+        self.set_high52(match values[2].to_string().parse() {
             Ok(high52) => high52,
             Err(_) => 0.0,
         });
-        self.set_low52(match values[5].to_string().parse() {
+        self.set_low52(match values[3].to_string().parse() {
             Ok(low52) => low52,
             Err(_) => 0.0,
         });
+        self.set_pe_ratio(match values[4].to_string().parse() {
+            Ok(pe_ratio) => pe_ratio,
+            Err(_) => 0.0,
+        });
+        self.set_eps(match values[5].to_string().parse() {
+            Ok(eps) => eps,
+            Err(_) => 0.0,
+        });
+        
 
         return Ok(true);
     }
@@ -179,5 +180,44 @@ impl Stock {
         output.pop();
         output.push_str("]}");
         return output;
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_new() {
+        let s = Stock::new("spy");
+        assert_eq!(s.get_ticker(), "spy");
+    }
+
+    #[test]
+    fn test_load_contemporary_data() {
+        let mut s= Stock::new("spy");
+        match s.load_data(Path::new("./test/data/spy_contemporary.csv")) {Ok(b) => b, Err(error) => panic!("{}", error)};
+        assert_eq!(s.get_ticker(), "spy");
+        assert_eq!(s.get_high52(), 479.98);
+        assert_eq!(s.get_low52(), 380.54);
+        assert_eq!(s.get_market_cap(), 369696299325);
+        assert_eq!(s.get_pe_ratio(), 0.0);
+        assert_eq!(s.get_eps(), 0.0);
+        assert_eq!(s.get_security_type(), "etf");
+    }
+
+    #[test]
+    fn test_load_historical_data() {
+        let mut s= Stock::new("spy");
+        match s.load_historical_data(Path::new("./test/data/spy_historical.csv")) {Ok(b) => b, Err(error) => panic!("{}", error)};
+        let hd = s.get_historical_data();
+        assert_eq!(hd.len(), 5);
+        assert_eq!(hd[0].get_date().to_string(), "1/2/2014 16:00:00");
+        assert_eq!(hd[0].get_low(), 182.48);
+        assert_eq!(hd[0].get_high(), 184.07);
+        assert_eq!(hd[0].get_open(), 183.98);
+        assert_eq!(hd[0].get_close(), 182.92);
+        assert_eq!(hd[0].get_volume(), 119636836);
     }
 }
