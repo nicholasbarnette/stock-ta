@@ -4,6 +4,7 @@ pub mod historical;
 pub mod backtest;
 pub mod datetime;
 pub mod ta;
+pub mod iex;
 
 #[derive(Debug)]
 pub struct Stock {

@@ -6,45 +6,47 @@ mod stock;
 fn main() {
     println!("Hello, world!");
 
-    let mut s = stock::Stock::new("aapl");
-    match s.load_data(Path::new("./src/assets/contemporary/aapl.csv")) {Ok(b) => b, Err(error) => panic!("{}", error)};
-    match s.load_historical_data(Path::new("./src/assets/historical/aapl.csv")) {Ok(b) => b, Err(error) => panic!("{}", error)};
-    s.backtest();
+    stock::iex::quote("aapl");
 
-    let data: Vec<&stock::historical::HistoricalData> = s.query_historical_data(
-        &stock::datetime::DateTime::new("1/1/2021 00:00:00"),
-        &stock::datetime::DateTime::new("12/31/2021 00:00:00")
-    );
+    // let mut s = stock::Stock::new("aapl");
+    // match s.load_data(Path::new("./src/assets/contemporary/aapl.csv")) {Ok(b) => b, Err(error) => panic!("{}", error)};
+    // match s.load_historical_data(Path::new("./src/assets/historical/aapl.csv")) {Ok(b) => b, Err(error) => panic!("{}", error)};
+    // s.backtest();
 
-    let prices: Vec<f32> = data.iter().map(|el| el.get_close()).collect();
-    const NUM_DAYS: usize = 50;
-    let smas = stock::ta::sma::run(prices, NUM_DAYS);
-    println!("smas {:?}\n\n", smas);
+    // let data: Vec<&stock::historical::HistoricalData> = s.query_historical_data(
+    //     &stock::datetime::DateTime::new("1/1/2021 00:00:00"),
+    //     &stock::datetime::DateTime::new("12/31/2021 00:00:00")
+    // );
 
-    let prices: Vec<f32> = data.iter().map(|el| el.get_close()).collect();
-    let emas = stock::ta::ema::run(prices, NUM_DAYS);
-    println!("emas {:?}\n\n", emas);
+    // let prices: Vec<f32> = data.iter().map(|el| el.get_close()).collect();
+    // const NUM_DAYS: usize = 50;
+    // let smas = stock::ta::sma::run(prices, NUM_DAYS);
+    // println!("smas {:?}\n\n", smas);
 
-    let prices: Vec<f32> = data.iter().map(|el| el.get_close()).collect();
-    let macds = stock::ta::macd::run(prices);
-    println!("macds {:?}\n\n", macds);
+    // let prices: Vec<f32> = data.iter().map(|el| el.get_close()).collect();
+    // let emas = stock::ta::ema::run(prices, NUM_DAYS);
+    // println!("emas {:?}\n\n", emas);
 
-    let prices: Vec<f32> = data.iter().map(|el| el.get_close()).collect();
-    let rsis = stock::ta::rsi::run(prices);
-    println!("rsis {:?}\n\n", rsis);
+    // let prices: Vec<f32> = data.iter().map(|el| el.get_close()).collect();
+    // let macds = stock::ta::macd::run(prices);
+    // println!("macds {:?}\n\n", macds);
 
-    let prices: Vec<f32> = data.iter().map(|el| el.get_close()).collect();
-    let volume: Vec<u32> = data.iter().map(|el| el.get_volume()).collect();
-    let obvs = stock::ta::obv::run(prices, volume);
-    println!("obvs {:?}\n\n", obvs);
+    // let prices: Vec<f32> = data.iter().map(|el| el.get_close()).collect();
+    // let rsis = stock::ta::rsi::run(prices);
+    // println!("rsis {:?}\n\n", rsis);
 
-    let prices: Vec<(f32, f32, f32)> = data.iter().map(|el| (el.get_close(), el.get_low(), el.get_high())).collect();
-    let stoch_osc = stock::ta::stochastic_oscillator::run(prices);
-    println!("stochastic_oscillator {:?}\n\n", stoch_osc);
+    // let prices: Vec<f32> = data.iter().map(|el| el.get_close()).collect();
+    // let volume: Vec<u32> = data.iter().map(|el| el.get_volume()).collect();
+    // let obvs = stock::ta::obv::run(prices, volume);
+    // println!("obvs {:?}\n\n", obvs);
 
-    let prices: Vec<f32> = data.iter().map(|el| el.get_close()).collect();
-    let boll_bands = stock::ta::bollinger_band::run(prices);
-    println!("bollinger_band {:?}\n\n", boll_bands);
+    // let prices: Vec<(f32, f32, f32)> = data.iter().map(|el| (el.get_close(), el.get_low(), el.get_high())).collect();
+    // let stoch_osc = stock::ta::stochastic_oscillator::run(prices);
+    // println!("stochastic_oscillator {:?}\n\n", stoch_osc);
+
+    // let prices: Vec<f32> = data.iter().map(|el| el.get_close()).collect();
+    // let boll_bands = stock::ta::bollinger_band::run(prices);
+    // println!("bollinger_band {:?}\n\n", boll_bands);
 
 
     // let s = json::sanitize::sanitize("{

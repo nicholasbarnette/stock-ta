@@ -1,2 +1,2 @@
-type,marketcap,high52,low52,pe,eps
-etf,369696299325,479.98,380.54,,
+name,type,marketcap,high52,low52,pe,eps,summary
+SPDR S&P 500 ETF Trust,ETF,,479.98,380.54,,,"The Trust seeks to achieve its investment objective by holding a portfolio of the common stocks that are included in the index (the “Portfolio”), with the weight of each stock in the Portfolio substantially corresponding to the weight of such stock in the index."
